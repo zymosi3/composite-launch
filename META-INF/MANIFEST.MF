@@ -1,0 +1,15 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Composite-launch
+Bundle-SymbolicName: com.zymosi3.eclipse.plugins.claunch;singleton:=true
+Bundle-Version: 1.0
+Bundle-Activator: com.zymosi3.eclipse.plugins.claunch.Activator
+Bundle-Vendor: ZYMOSI3
+Require-Bundle: org.eclipse.ui,
+ org.eclipse.core.runtime,
+ org.eclipse.debug.core,
+ org.eclipse.debug.ui,
+ org.eclipse.jface,
+ org.eclipse.ui.workbench
+Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+Bundle-ActivationPolicy: lazy

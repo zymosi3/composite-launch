@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+
+    <extension point="org.eclipse.debug.core.launchConfigurationTypes">
+        <launchConfigurationType
+            name="Composite Launch"
+            delegate="com.zymosi3.eclipse.plugins.claunch.CompositeLaunchDelegate"
+            modes="run, debug, profile"               
+            id="com.zymosi3.eclipse.plugins.claunch">        
+        </launchConfigurationType>
+    </extension>
+    <extension point="org.eclipse.debug.ui.launchConfigurationTypeImages">
+        <launchConfigurationTypeImage
+            icon="icons/claunch.gif"
+            configTypeID="com.zymosi3.eclipse.plugins.claunch"
+            id="com.zymosi3.eclipse.plugins.claunch.ui.launchConfigurationTypeImage">
+        </launchConfigurationTypeImage>
+    </extension>
+    <extension point="org.eclipse.debug.ui.launchConfigurationTabGroups">
+        <launchConfigurationTabGroup
+            type="com.zymosi3.eclipse.plugins.claunch"
+            class="com.zymosi3.eclipse.plugins.claunch.ui.CompositeLaunchTabGroup"
+            id="com.zymosi3.eclipse.plugins.claunch.ui.launchConfigurationTabGroup">
+        </launchConfigurationTabGroup>
+    </extension>
+
+</plugin>
