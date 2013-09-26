@@ -24,6 +24,7 @@ import org.eclipse.swt.layout.RowData;
 import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Label;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.dialogs.PatternFilter;
 import org.eclipse.ui.model.WorkbenchViewerComparator;
@@ -45,65 +46,60 @@ public class CompositeLaunchMainTab extends AbstractLaunchConfigurationTab {
     public void createControl(Composite parent) {
         Composite mainComposite = new Composite(parent, SWT.NONE);
         GridLayout mainLayout = new GridLayout();
-        mainLayout.numColumns = 2;
+        mainLayout.numColumns = 3;
         mainComposite.setLayout(mainLayout);
         // composite.setFont(parent.getFont());
         setControl(mainComposite);
 
         GridData fillBothGridData = new GridData(SWT.FILL, SWT.FILL, true, true);
-        Composite leftComposite = new Composite(mainComposite, SWT.NONE);
-        GridLayout leftLayout = new GridLayout();
-        leftLayout.numColumns = 1;
-        leftComposite.setLayout(leftLayout);
-        leftComposite.setLayoutData(fillBothGridData);
-        Composite rightComposite = new Composite(mainComposite, SWT.NONE);
-        GridLayout rightLayout = new GridLayout();
-        rightLayout.numColumns = 1;
-        rightComposite.setLayout(rightLayout);
-        rightComposite.setLayoutData(fillBothGridData);
-
+        
         IBaseLabelProvider launchLabelProvider = new DecoratingLabelProvider(
                 DebugUITools.newDebugModelPresentation(), 
                 PlatformUI.getWorkbench().getDecoratorManager().getLabelDecorator()
         );
-        launchConfViewer = new CheckboxTreeViewer(leftComposite, SWT.CHECK | SWT.BORDER | SWT.V_SCROLL | SWT.SINGLE);
+        launchConfViewer = new CheckboxTreeViewer(mainComposite, SWT.CHECK | SWT.BORDER | SWT.V_SCROLL | SWT.SINGLE);
         launchConfViewer.getTree().setLayoutData(fillBothGridData);
         launchConfViewer.setContentProvider(new LaunchConfigurationTreeContentProvider(null, parent.getShell()));
         launchConfViewer.setLabelProvider(launchLabelProvider);
         launchConfViewer.setComparator(new WorkbenchViewerComparator());
         launchConfViewer.setInput(launchConfInput);
-        choosenConfViewer = new CheckboxTreeViewer(rightComposite);
+        
+        Composite buttonsComposite = new Composite(mainComposite, SWT.NONE);
+        GridData buttonsGridData = new GridData(GridData.BEGINNING, GridData.CENTER, false, false);
+        buttonsComposite.setLayoutData(buttonsGridData);
+        GridLayout buttonsLayout = new GridLayout();
+        buttonsLayout.numColumns = 1;
+        buttonsComposite.setLayout(buttonsLayout);
+
+        choosenConfViewer = new CheckboxTreeViewer(mainComposite);
         choosenConfViewer.getTree().setLayoutData(fillBothGridData);
         choosenConfViewer.setLabelProvider(launchLabelProvider);
         
-        Composite leftButtonsComposite = new Composite(leftComposite, SWT.NONE);
-        RowLayout leftButtonsLayout = new RowLayout();
-        leftButtonsLayout.type = SWT.HORIZONTAL;
-        leftButtonsComposite.setLayout(leftButtonsLayout);
-        Composite rightButtonsComposite = new Composite(rightComposite, SWT.NONE);
-        RowLayout rightButtonsLayout = new RowLayout();
-        rightButtonsLayout.type = SWT.HORIZONTAL;
-        rightButtonsComposite.setLayout(leftButtonsLayout);
-        
-        RowData buttonRowData = new RowData(74, 26);
-        addButton = new Button(leftButtonsComposite, SWT.PUSH);
+        GridData buttonGridData = new GridData(GridData.BEGINNING, GridData.CENTER, false, false);
+        buttonGridData.heightHint = 26;
+        buttonGridData.minimumHeight = 26;
+        buttonGridData.widthHint = 74;
+        buttonGridData.minimumHeight = 74;
+        addButton = new Button(buttonsComposite, SWT.PUSH);
         addButton.setText("Add");
-        addButton.setLayoutData(buttonRowData);
-        addAllButton = new Button(leftButtonsComposite, SWT.PUSH);
+        addButton.setLayoutData(buttonGridData);
+        addAllButton = new Button(buttonsComposite, SWT.PUSH);
         addAllButton.setText("AddAll");
-        addAllButton.setLayoutData(buttonRowData);
-        upButton = new Button(rightButtonsComposite, SWT.PUSH);
+        addAllButton.setLayoutData(buttonGridData);
+        Label separator = new Label(buttonsComposite, SWT.HORIZONTAL | SWT.SEPARATOR);
+        separator.setLayoutData(new GridData(GridData.CENTER, GridData.CENTER, false, false));
+        upButton = new Button(buttonsComposite, SWT.PUSH);
         upButton.setText("Up");
-        upButton.setLayoutData(buttonRowData);
-        downButton = new Button(rightButtonsComposite, SWT.PUSH);
+        upButton.setLayoutData(buttonGridData);
+        downButton = new Button(buttonsComposite, SWT.PUSH);
         downButton.setText("Down");
-        downButton.setLayoutData(buttonRowData);
-        removeButton = new Button(rightButtonsComposite, SWT.PUSH);
+        downButton.setLayoutData(buttonGridData);
+        removeButton = new Button(buttonsComposite, SWT.PUSH);
         removeButton.setText("Remove");
-        removeButton.setLayoutData(buttonRowData);
-        removeAllButton = new Button(rightButtonsComposite, SWT.PUSH);
+        removeButton.setLayoutData(buttonGridData);
+        removeAllButton = new Button(buttonsComposite, SWT.PUSH);
         removeAllButton.setText("RemoveAll");
-        removeAllButton.setLayoutData(buttonRowData);
+        removeAllButton.setLayoutData(buttonGridData);
         
     }
 
