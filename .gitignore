@@ -2,7 +2,6 @@
 .metadata
 .settings
 .classpath
-.project
 
 # Package Files #
 *.jar
