@@ -8,25 +8,18 @@ import org.eclipse.debug.core.DebugPlugin;
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.debug.core.ILaunchManager;
-import org.eclipse.debug.internal.ui.launchConfigurations.LaunchConfigurationFilteredTree;
-import org.eclipse.debug.internal.ui.launchConfigurations.LaunchConfigurationTreeContentProvider;
 import org.eclipse.debug.ui.AbstractLaunchConfigurationTab;
 import org.eclipse.debug.ui.DebugUITools;
 import org.eclipse.jface.viewers.CheckboxTreeViewer;
 import org.eclipse.jface.viewers.DecoratingLabelProvider;
 import org.eclipse.jface.viewers.IBaseLabelProvider;
-import org.eclipse.jface.viewers.TableViewer;
-import org.eclipse.jface.viewers.ViewerFilter;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.layout.RowData;
-import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.ui.PlatformUI;
-import org.eclipse.ui.dialogs.PatternFilter;
 import org.eclipse.ui.model.WorkbenchViewerComparator;
 
 public class CompositeLaunchMainTab extends AbstractLaunchConfigurationTab {
@@ -59,7 +52,7 @@ public class CompositeLaunchMainTab extends AbstractLaunchConfigurationTab {
         );
         launchConfViewer = new CheckboxTreeViewer(mainComposite, SWT.CHECK | SWT.BORDER | SWT.V_SCROLL | SWT.SINGLE);
         launchConfViewer.getTree().setLayoutData(fillBothGridData);
-        launchConfViewer.setContentProvider(new LaunchConfigurationTreeContentProvider(null, parent.getShell()));
+        launchConfViewer.setContentProvider(new LaunchConfigurationContentProvider());
         launchConfViewer.setLabelProvider(launchLabelProvider);
         launchConfViewer.setComparator(new WorkbenchViewerComparator());
         launchConfViewer.setInput(launchConfInput);
@@ -100,7 +93,6 @@ public class CompositeLaunchMainTab extends AbstractLaunchConfigurationTab {
         removeAllButton = new Button(buttonsComposite, SWT.PUSH);
         removeAllButton.setText("RemoveAll");
         removeAllButton.setLayoutData(buttonGridData);
-        
     }
 
     @Override
