@@ -19,6 +19,8 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Tree;
+import org.eclipse.swt.widgets.TreeColumn;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.model.WorkbenchViewerComparator;
 
@@ -46,16 +48,25 @@ public class CompositeLaunchMainTab extends AbstractLaunchConfigurationTab {
 
         GridData fillBothGridData = new GridData(SWT.FILL, SWT.FILL, true, true);
         
-        IBaseLabelProvider launchLabelProvider = new DecoratingLabelProvider(
-                DebugUITools.newDebugModelPresentation(), 
-                PlatformUI.getWorkbench().getDecoratorManager().getLabelDecorator()
-        );
-        launchConfViewer = new CheckboxTreeViewer(mainComposite, SWT.CHECK | SWT.BORDER | SWT.V_SCROLL | SWT.SINGLE);
-        launchConfViewer.getTree().setLayoutData(fillBothGridData);
+        launchConfViewer = new CheckboxTreeViewer(mainComposite, SWT.CHECK | SWT.BORDER | SWT.V_SCROLL | SWT.H_SCROLL | SWT.MULTI);
         launchConfViewer.setContentProvider(new LaunchConfigurationContentProvider());
-        launchConfViewer.setLabelProvider(launchLabelProvider);
+        launchConfViewer.setLabelProvider(new LaunchConfigurationLabelProvider());
         launchConfViewer.setComparator(new WorkbenchViewerComparator());
         launchConfViewer.setInput(launchConfInput);
+        
+        Tree launchConfViewerTree = launchConfViewer.getTree();
+        launchConfViewerTree.setLayoutData(fillBothGridData);
+        launchConfViewerTree.setHeaderVisible(true);
+        launchConfViewerTree.setFont(parent.getFont());
+        TreeColumn nameColumn = new TreeColumn(launchConfViewerTree, SWT.LEFT);
+        nameColumn.setText("Name");
+        nameColumn.setWidth(200);
+        TreeColumn typeColumn = new TreeColumn(launchConfViewerTree, SWT.LEFT);
+        typeColumn.setText("Type");
+        typeColumn.setWidth(150);
+        TreeColumn modesColumn = new TreeColumn(launchConfViewerTree, SWT.LEFT);
+        modesColumn.setText("Modes");
+        modesColumn.setWidth(150);
         
         Composite buttonsComposite = new Composite(mainComposite, SWT.NONE);
         GridData buttonsGridData = new GridData(GridData.BEGINNING, GridData.CENTER, false, false);
@@ -64,9 +75,9 @@ public class CompositeLaunchMainTab extends AbstractLaunchConfigurationTab {
         buttonsLayout.numColumns = 1;
         buttonsComposite.setLayout(buttonsLayout);
 
-        choosenConfViewer = new CheckboxTreeViewer(mainComposite);
+        choosenConfViewer = new CheckboxTreeViewer(mainComposite, SWT.CHECK | SWT.BORDER | SWT.V_SCROLL | SWT.H_SCROLL | SWT.MULTI);
         choosenConfViewer.getTree().setLayoutData(fillBothGridData);
-        choosenConfViewer.setLabelProvider(launchLabelProvider);
+        choosenConfViewer.setLabelProvider(new LaunchConfigurationLabelProvider());
         
         GridData buttonGridData = new GridData(GridData.BEGINNING, GridData.CENTER, false, false);
         buttonGridData.heightHint = 26;

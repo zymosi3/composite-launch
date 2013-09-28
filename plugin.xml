@@ -4,7 +4,7 @@
 
     <extension point="org.eclipse.debug.core.launchConfigurationTypes">
         <launchConfigurationType
-            name="Composite Launch"
+            name="%launchConfigurationType.name"
             delegate="com.zymosi3.eclipse.plugins.claunch.CompositeLaunchDelegate"
             modes="run, debug, profile"               
             id="com.zymosi3.eclipse.plugins.claunch">        
