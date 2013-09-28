@@ -9,10 +9,7 @@ import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.debug.core.ILaunchManager;
 import org.eclipse.debug.ui.AbstractLaunchConfigurationTab;
-import org.eclipse.debug.ui.DebugUITools;
 import org.eclipse.jface.viewers.CheckboxTreeViewer;
-import org.eclipse.jface.viewers.DecoratingLabelProvider;
-import org.eclipse.jface.viewers.IBaseLabelProvider;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -21,8 +18,6 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeColumn;
-import org.eclipse.ui.PlatformUI;
-import org.eclipse.ui.model.WorkbenchViewerComparator;
 
 public class CompositeLaunchMainTab extends AbstractLaunchConfigurationTab {
 
@@ -51,7 +46,7 @@ public class CompositeLaunchMainTab extends AbstractLaunchConfigurationTab {
         launchConfViewer = new CheckboxTreeViewer(mainComposite, SWT.CHECK | SWT.BORDER | SWT.V_SCROLL | SWT.H_SCROLL | SWT.MULTI);
         launchConfViewer.setContentProvider(new LaunchConfigurationContentProvider());
         launchConfViewer.setLabelProvider(new LaunchConfigurationLabelProvider());
-        launchConfViewer.setComparator(new WorkbenchViewerComparator());
+        launchConfViewer.setComparator(new LaunchConfigurationViewComparator());
         launchConfViewer.setInput(launchConfInput);
         
         Tree launchConfViewerTree = launchConfViewer.getTree();

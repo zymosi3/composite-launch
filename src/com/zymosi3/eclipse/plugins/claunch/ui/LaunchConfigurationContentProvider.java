@@ -1,6 +1,7 @@
 package com.zymosi3.eclipse.plugins.claunch.ui;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -30,16 +31,16 @@ public class LaunchConfigurationContentProvider implements ITreeContentProvider 
     @Override
     public Object[] getElements(Object inputElement) {
         ILaunchConfigurationType[] allTypes = launchManager.getLaunchConfigurationTypes();
-        List<Object[]> elements = new ArrayList<>(); 
+        List<LaunchConfigurationElement> elements = new ArrayList<>(); 
         for (ILaunchConfigurationType type : allTypes) {
             if (type.isPublic()) {
                 ILaunchConfiguration[] configurations = getConfigurations(type);
                 for (ILaunchConfiguration configuration : configurations) {
-                    elements.add(new Object[] {
+                    elements.add(new LaunchConfigurationElement (
+                            type,
                             configuration,
-                            type.getName(),
                             getModes(type)
-                    });
+                    ));
                 }
             }
         }
@@ -74,19 +75,14 @@ public class LaunchConfigurationContentProvider implements ITreeContentProvider 
     }
     
     @SuppressWarnings({ "rawtypes", "unchecked" })
-    private String getModes(ILaunchConfigurationType type) {
-        StringBuilder sb = new StringBuilder();
+    private String[] getModes(ILaunchConfigurationType type) {
         Set<Set> modesCombinations = type.getSupportedModeCombinations();
-        String delimiter = ", ";
+        Set<String> modes = new HashSet<>();
         for (Set modeCombination : modesCombinations) {
             for (Object mode : modeCombination) {
-                sb.append(mode);
-                sb.append(delimiter);
+                modes.add(String.valueOf(mode));
             }
         }
-        if (sb.length() > 0) {
-            sb.delete(sb.length() - delimiter.length(), sb.length());
-        }
-        return sb.toString();
+        return modes.toArray(new String[modes.size()]);
     }
 }
