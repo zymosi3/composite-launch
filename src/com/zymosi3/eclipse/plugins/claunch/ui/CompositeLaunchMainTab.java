@@ -3,6 +3,7 @@ package com.zymosi3.eclipse.plugins.claunch.ui;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 
 import org.eclipse.debug.core.DebugPlugin;
@@ -14,15 +15,20 @@ import org.eclipse.debug.ui.AbstractLaunchConfigurationTab;
 import org.eclipse.jface.viewers.CheckboxTreeViewer;
 import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IDoubleClickListener;
+import org.eclipse.jface.viewers.ISelectionChangedListener;
+import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.TreeSelection;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeColumn;
+import org.eclipse.swt.widgets.TreeItem;
 
 public class CompositeLaunchMainTab extends AbstractLaunchConfigurationTab {
 
@@ -53,6 +59,9 @@ public class CompositeLaunchMainTab extends AbstractLaunchConfigurationTab {
         initChoosenConfViewer(mainComposite);
         
         initBottomButtons(mainComposite);
+        
+        setButtonsEnabled();
+        setChoosenInput();
     }
 
     private void initLaunchConfViewer(Composite parent) {
@@ -85,10 +94,18 @@ public class CompositeLaunchMainTab extends AbstractLaunchConfigurationTab {
                 if (! selection.isEmpty()) {
                     Object selectedObject = selection.getFirstElement();
                     if (selectedObject instanceof LaunchConfigurationElement) {
-                        choosenConfInput.add((LaunchConfigurationElement) selectedObject);
-                        choosenConfViewer.setInput(choosenConfInput);
+                        if (choosenConfInput != null) {
+                            choosenConfInput.add((LaunchConfigurationElement) selectedObject);
+                        }
+                        setChoosenInput();
                     }
                 }
+            }
+        });
+        launchConfViewer.addSelectionChangedListener(new ISelectionChangedListener() {
+            @Override
+            public void selectionChanged(SelectionChangedEvent event) {
+                setButtonsEnabled();
             }
         });
     }
@@ -109,11 +126,61 @@ public class CompositeLaunchMainTab extends AbstractLaunchConfigurationTab {
         addButton = new Button(topButtonsComposite, SWT.PUSH);
         addButton.setText("Add");
         addButton.setLayoutData(buttonGridData);
-        addButton.setEnabled(false);
+        addButton.addSelectionListener(new SelectionListener() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                if (launchConfViewer != null && choosenConfInput != null) {
+                    TreeSelection selection = (TreeSelection) launchConfViewer.getSelection();
+                    Iterator<?> iterator = selection.iterator();
+                    while (iterator.hasNext()) {
+                        Object next = iterator.next();
+                        if (next instanceof LaunchConfigurationElement) {
+                            choosenConfInput.add((LaunchConfigurationElement) next);
+                        }
+                    }
+                    setChoosenInput();
+                }
+            }
+            
+            @Override
+            public void widgetDefaultSelected(SelectionEvent e) {}
+        });
         addAllButton = new Button(topButtonsComposite, SWT.PUSH);
         addAllButton.setText("AddAll");
         addAllButton.setLayoutData(buttonGridData);
-        addAllButton.setEnabled(false);
+        addAllButton.addSelectionListener(new SelectionListener() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                if (launchConfViewer != null && choosenConfInput != null) {
+                    TreeItem[] items = launchConfViewer.getTree().getItems();
+                    for (TreeItem item : items) {
+                        if (item.getData() instanceof LaunchConfigurationElement) {
+                            choosenConfInput.add((LaunchConfigurationElement) item.getData());
+                        }
+                    }
+                    setChoosenInput();
+                }
+            }
+            
+            @Override
+            public void widgetDefaultSelected(SelectionEvent e) {}
+        });
+    }
+    
+    private void initChoosenConfViewer(Composite parent) {
+        GridData fillBothGridData = new GridData(SWT.FILL, SWT.FILL, true, true);
+        
+        choosenConfViewer = new CheckboxTreeViewer(parent, SWT.CHECK | SWT.BORDER | SWT.V_SCROLL | SWT.H_SCROLL | SWT.MULTI);
+        choosenConfViewer.setContentProvider(new ChoosenConfigurationContentProvider());
+        choosenConfViewer.setLabelProvider(new ChoosenConfigurationLabelProvider());
+        
+        Tree choosenConfViewerTree = choosenConfViewer.getTree();
+        choosenConfViewerTree.setLayoutData(fillBothGridData);
+        choosenConfViewerTree.setHeaderVisible(false);
+        choosenConfViewerTree.setFont(parent.getFont());
+        TreeColumn nameColumn = new TreeColumn(choosenConfViewerTree, SWT.LEFT);
+        nameColumn.setText("Name");
+        nameColumn.setWidth(200);
     }
     
     private void initBottomButtons(Composite parent) {
@@ -139,23 +206,6 @@ public class CompositeLaunchMainTab extends AbstractLaunchConfigurationTab {
         removeAllButton.setLayoutData(buttonGridData);
     }
     
-    private void initChoosenConfViewer(Composite parent) {
-        GridData fillBothGridData = new GridData(SWT.FILL, SWT.FILL, true, true);
-        
-        choosenConfViewer = new CheckboxTreeViewer(parent, SWT.CHECK | SWT.BORDER | SWT.V_SCROLL | SWT.H_SCROLL | SWT.MULTI);
-        choosenConfViewer.setContentProvider(new ChoosenConfigurationContentProvider());
-        choosenConfViewer.setLabelProvider(new ChoosenConfigurationLabelProvider());
-        choosenConfViewer.setInput(choosenConfInput);
-        
-        Tree choosenConfViewerTree = choosenConfViewer.getTree();
-        choosenConfViewerTree.setLayoutData(fillBothGridData);
-        choosenConfViewerTree.setHeaderVisible(false);
-        choosenConfViewerTree.setFont(parent.getFont());
-        TreeColumn nameColumn = new TreeColumn(choosenConfViewerTree, SWT.LEFT);
-        nameColumn.setText("Name");
-        nameColumn.setWidth(200);
-    }
-
     @Override
     public void setDefaults(ILaunchConfigurationWorkingCopy configuration) {}
 
@@ -166,6 +216,7 @@ public class CompositeLaunchMainTab extends AbstractLaunchConfigurationTab {
         if (launchConfViewer != null) {
             launchConfViewer.setInput(allTypes);
         }
+        setButtonsEnabled();
     }
 
     @Override
@@ -179,4 +230,20 @@ public class CompositeLaunchMainTab extends AbstractLaunchConfigurationTab {
         return "Main";
     }
 
+    private void setButtonsEnabled() {
+        if (launchConfViewer != null) {
+            if (addButton != null) {
+                addButton.setEnabled(! ((TreeSelection) launchConfViewer.getSelection()).isEmpty());
+            }
+            if (addAllButton != null) {
+                addAllButton.setEnabled(launchConfViewer.getTree().getItems().length > 0);
+            }
+        }
+    }
+    
+    private void setChoosenInput() {
+        if (choosenConfViewer != null) {
+            choosenConfViewer.setInput(choosenConfInput);
+        }
+    }
 }

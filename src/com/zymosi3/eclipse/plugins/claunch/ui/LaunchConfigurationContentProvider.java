@@ -5,7 +5,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.debug.core.DebugPlugin;
 import org.eclipse.debug.core.ILaunchConfiguration;
@@ -60,7 +59,7 @@ public class LaunchConfigurationContentProvider implements ITreeContentProvider 
 
     @Override
     public Object getParent(Object element) {
-        return ResourcesPlugin.getWorkspace().getRoot();
+        return null;
     }
 
     @Override
