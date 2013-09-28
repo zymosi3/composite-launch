@@ -30,21 +30,27 @@ public class LaunchConfigurationContentProvider implements ITreeContentProvider 
 
     @Override
     public Object[] getElements(Object inputElement) {
-        ILaunchConfigurationType[] allTypes = launchManager.getLaunchConfigurationTypes();
-        List<LaunchConfigurationElement> elements = new ArrayList<>(); 
-        for (ILaunchConfigurationType type : allTypes) {
-            if (type.isPublic()) {
-                ILaunchConfiguration[] configurations = getConfigurations(type);
-                for (ILaunchConfiguration configuration : configurations) {
-                    elements.add(new LaunchConfigurationElement (
-                            type,
-                            configuration,
-                            getModes(type)
-                    ));
+        if (inputElement instanceof List) {
+            List<?> allTypes = (List<?>) inputElement;
+            List<LaunchConfigurationElement> elements = new ArrayList<>(); 
+            for (Object typeObj : allTypes) {
+                if (typeObj instanceof ILaunchConfigurationType) {
+                    ILaunchConfigurationType type = (ILaunchConfigurationType) typeObj;
+                    if (type.isPublic()) {
+                        ILaunchConfiguration[] configurations = getConfigurations(type);
+                        for (ILaunchConfiguration configuration : configurations) {
+                            elements.add(new LaunchConfigurationElement (
+                                    type,
+                                    configuration,
+                                    getModes(type)
+                            ));
+                        }
+                    }
                 }
             }
+            return elements.toArray();
         }
-        return elements.toArray();
+        return new Object[0];
     }
 
     @Override
@@ -67,18 +73,18 @@ public class LaunchConfigurationContentProvider implements ITreeContentProvider 
             return launchManager.getLaunchConfigurations(type);
         } catch (CoreException e) {
             throw new SWTException(String.format(
-                    "Filed to get launch configurations with type %s. Message: \"%s\"",
+                    "Failed to get launch configurations with type %s. Message: \"%s\"",
                     type.getName(),
                     e.getMessage()
             ));
         }
     }
     
-    @SuppressWarnings({ "rawtypes", "unchecked" })
+    @SuppressWarnings({ "unchecked" })
     private String[] getModes(ILaunchConfigurationType type) {
-        Set<Set> modesCombinations = type.getSupportedModeCombinations();
+        Set<Set<?>> modesCombinations = type.getSupportedModeCombinations();
         Set<String> modes = new HashSet<>();
-        for (Set modeCombination : modesCombinations) {
+        for (Set<?> modeCombination : modesCombinations) {
             for (Object mode : modeCombination) {
                 modes.add(String.valueOf(mode));
             }

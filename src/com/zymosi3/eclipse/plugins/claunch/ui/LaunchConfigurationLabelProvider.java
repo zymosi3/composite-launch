@@ -6,7 +6,7 @@ import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.swt.graphics.Image;
 
 @SuppressWarnings("restriction")
-public class LaunchConfigurationLabelProvider extends BaseLabelProvider implements ITableLabelProvider {
+public abstract class LaunchConfigurationLabelProvider extends BaseLabelProvider implements ITableLabelProvider {
 
     @Override
     public Image getColumnImage(Object element, int columnIndex) {
@@ -18,30 +18,4 @@ public class LaunchConfigurationLabelProvider extends BaseLabelProvider implemen
         }
         return null;
     }
-
-    @Override
-    public String getColumnText(Object element, int columnIndex) {
-        if (element instanceof LaunchConfigurationElement) {
-            LaunchConfigurationElement configurationElement = (LaunchConfigurationElement) element;
-            if (columnIndex == 0) {
-                return configurationElement.getConfiguration().getName();
-            }
-            if (columnIndex == 1) {
-                return configurationElement.getType().getName();
-            }
-            if (columnIndex == 2) {
-                StringBuilder sb = new StringBuilder();
-                String delimiter = ", ";
-                for (String mode : configurationElement.getModes()) {
-                    sb.append(mode).append(delimiter);
-                }
-                if (sb.length() > 0) {
-                    sb.delete(sb.length() - delimiter.length(), sb.length());
-                }
-                return sb.toString();
-            }
-        }
-        return String.valueOf(element);
-    }
-
 }

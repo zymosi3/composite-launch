@@ -3,6 +3,9 @@ package com.zymosi3.eclipse.plugins.claunch.ui;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerComparator;
 
+/** 
+ * Compares two LaunchConfigurationElements at first by types and then by configuration names.
+ */
 public class LaunchConfigurationViewComparator extends ViewerComparator {
 
     @Override
