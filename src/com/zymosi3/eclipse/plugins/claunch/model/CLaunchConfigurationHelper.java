@@ -138,6 +138,20 @@ public class CLaunchConfigurationHelper {
         return contains(configuration, configuration);
     }
     
+    public static boolean configurationExists(ILaunchConfiguration configuration) throws CoreException {
+        if (configuration == null) {
+            return false;
+        }
+        ILaunchManager launchManager = DebugPlugin.getDefault().getLaunchManager();
+        ILaunchConfiguration[] typeConfigurations = launchManager.getLaunchConfigurations(configuration.getType());
+        for (ILaunchConfiguration typeConfiguration : typeConfigurations) {
+            if (typeConfiguration.getName().equals(configuration.getName())) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
     private static boolean contains(ILaunchConfiguration configuration, ILaunchConfiguration compositeConfiguration) throws CoreException {
         if (configuration != null && compositeConfiguration != null) {
             List<CLaunchConfigurationElement> elements = readElements(configuration);
