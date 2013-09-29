@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.debug.ui.AbstractLaunchConfigurationTab;
@@ -18,6 +19,7 @@ import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.TreeSelection;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.SWTException;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.GridData;
@@ -42,7 +44,13 @@ public class CompositeLaunchMainTab extends AbstractLaunchConfigurationTab {
     private Button removeButton;
     private Button removeAllButton;
     
+    private String mode;
+    
     private List<CLaunchConfigurationElement> choosenConfInput = new ArrayList<>();
+
+    public CompositeLaunchMainTab(String mode) {
+        this.mode = mode;
+    }
 
     @Override
     public void createControl(Composite parent) {
@@ -94,6 +102,7 @@ public class CompositeLaunchMainTab extends AbstractLaunchConfigurationTab {
                 TreeSelection selection = (TreeSelection) event.getSelection();
                 addToChoosenInput(selection.getFirstElement());
                 setChoosenInput();
+                updateLaunchConfigurationDialog();
             }
         });
         launchConfViewer.addSelectionChangedListener(new ISelectionChangedListener() {
@@ -130,6 +139,7 @@ public class CompositeLaunchMainTab extends AbstractLaunchConfigurationTab {
                         addToChoosenInput(iterator.next());
                     }
                     setChoosenInput();
+                    updateLaunchConfigurationDialog();
                 }
             }
             
@@ -148,6 +158,7 @@ public class CompositeLaunchMainTab extends AbstractLaunchConfigurationTab {
                         addToChoosenInput(item.getData());
                     }
                     setChoosenInput();
+                    updateLaunchConfigurationDialog();
                 }
             }
             
@@ -188,6 +199,7 @@ public class CompositeLaunchMainTab extends AbstractLaunchConfigurationTab {
                 TreeSelection selection = (TreeSelection) event.getSelection();
                 removeFromChoosenInput(selection.getFirstElement());
                 setChoosenInput();
+                updateLaunchConfigurationDialog();
             }
         });
         choosenConfViewer.addSelectionChangedListener(new ISelectionChangedListener() {
@@ -225,6 +237,7 @@ public class CompositeLaunchMainTab extends AbstractLaunchConfigurationTab {
                     }
                 }
                 setChoosenInput();
+                updateLaunchConfigurationDialog();
             }
             
             @Override
@@ -252,6 +265,7 @@ public class CompositeLaunchMainTab extends AbstractLaunchConfigurationTab {
                     }
                 }
                 setChoosenInput();
+                updateLaunchConfigurationDialog();
             }
             
             @Override
@@ -271,6 +285,7 @@ public class CompositeLaunchMainTab extends AbstractLaunchConfigurationTab {
                         removeFromChoosenInput(iterator.next());
                     }
                     setChoosenInput();
+                    updateLaunchConfigurationDialog();
                 }
             }
             
@@ -290,6 +305,7 @@ public class CompositeLaunchMainTab extends AbstractLaunchConfigurationTab {
                         removeFromChoosenInput(item.getData());
                     }
                     setChoosenInput();
+                    updateLaunchConfigurationDialog();
                 }
             }
             
@@ -303,17 +319,47 @@ public class CompositeLaunchMainTab extends AbstractLaunchConfigurationTab {
 
     @Override
     public void initializeFrom(ILaunchConfiguration configuration) {
-        List<ILaunchConfiguration> launchConfViewerInput = CLaunchConfigurationHelper.getAllConfigurations(configuration);
+        List<ILaunchConfiguration> launchConfViewerInput;
+        try {
+            launchConfViewerInput = CLaunchConfigurationHelper.getAllConfigurations(configuration);
+        } catch (CoreException e) {
+            throw new SWTException(String.format("Failed to get launch configurations. Message: \"%s\"", e.getLocalizedMessage()));
+        }
         if (launchConfViewer != null) {
             launchConfViewer.setInput(launchConfViewerInput);
         }
+        try {
+            choosenConfInput = CLaunchConfigurationHelper.readElements(configuration);
+        } catch (CoreException e) {
+            throw new SWTException(String.format(
+                    "Failed to read elements from configuration %s. Message: \"%s\"",
+                    String.valueOf(configuration),
+                    e.getLocalizedMessage()
+            ));
+        }
+        setChoosenInput();
         setButtonsEnabled();
     }
 
     @Override
     public void performApply(ILaunchConfigurationWorkingCopy configuration) {
-        // TODO Auto-generated method stub
-
+//        CLaunchConfigurationHelper.removeElements(configuration);
+        CLaunchConfigurationHelper.writeElements(choosenConfInput, configuration);
+    }
+    
+    @Override
+    public boolean isValid(ILaunchConfiguration launchConfig) {
+        boolean isValid = true;
+        try {
+            if (CLaunchConfigurationHelper.containsLoop(launchConfig)) {
+                setErrorMessage(String.format("Launch configuration %s cotains loop", String.valueOf(launchConfig)));
+                isValid = false;
+            }
+        } catch (CoreException e) {
+            setErrorMessage(e.getLocalizedMessage());
+            isValid = false;
+        }
+        return isValid && super.isValid(launchConfig);
     }
 
     @Override

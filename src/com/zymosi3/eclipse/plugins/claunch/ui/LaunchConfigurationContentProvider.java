@@ -1,9 +1,7 @@
 package com.zymosi3.eclipse.plugins.claunch.ui;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.debug.core.DebugPlugin;
@@ -15,6 +13,7 @@ import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.SWTException;
 
 import com.zymosi3.eclipse.plugins.claunch.model.CLaunchConfigurationElement;
+import com.zymosi3.eclipse.plugins.claunch.model.CLaunchConfigurationHelper;
 
 /**
  * Provides launch configurations for tree viewer.
@@ -44,13 +43,13 @@ public class LaunchConfigurationContentProvider implements ITreeContentProvider 
                         throw new SWTException(String.format(
                                 "Failed to get launch configuration type with name %s. Message: \"%s\"",
                                 configuration.getName(),
-                                e.getMessage()
+                                e.getLocalizedMessage()
                         ));
                     }
                     elements.add(new CLaunchConfigurationElement (
                             type,
                             configuration,
-                            getModes(type)
+                            CLaunchConfigurationHelper.getLaunchConfigurationModes(type)
                     ));
                 }
             }
@@ -72,17 +71,5 @@ public class LaunchConfigurationContentProvider implements ITreeContentProvider 
     @Override
     public boolean hasChildren(Object element) {
         return false;
-    }
-
-    @SuppressWarnings({ "unchecked" })
-    private static List<String> getModes(ILaunchConfigurationType type) {
-        Set<Set<?>> modesCombinations = type.getSupportedModeCombinations();
-        Set<String> modes = new HashSet<>();
-        for (Set<?> modeCombination : modesCombinations) {
-            for (Object mode : modeCombination) {
-                modes.add(String.valueOf(mode));
-            }
-        }
-        return new ArrayList<>(modes);
     }
 }
