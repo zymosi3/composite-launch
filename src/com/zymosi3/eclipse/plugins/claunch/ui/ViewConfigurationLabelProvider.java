@@ -2,6 +2,9 @@ package com.zymosi3.eclipse.plugins.claunch.ui;
 
 import com.zymosi3.eclipse.plugins.claunch.model.CLaunchConfigurationElement;
 
+/**
+ * Label provider launch configurations tree.
+ */
 public class ViewConfigurationLabelProvider extends LaunchConfigurationLabelProvider {
     
     private static final int NAME_COLUMN_IDX = 0;

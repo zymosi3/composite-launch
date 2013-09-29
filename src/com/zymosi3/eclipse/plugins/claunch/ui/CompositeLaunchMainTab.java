@@ -33,10 +33,13 @@ import org.eclipse.swt.widgets.TreeItem;
 import com.zymosi3.eclipse.plugins.claunch.model.CLaunchConfigurationElement;
 import com.zymosi3.eclipse.plugins.claunch.model.CLaunchConfigurationHelper;
 
+/**
+ * The main tab of Composite launch UI.
+ */
 public class CompositeLaunchMainTab extends AbstractLaunchConfigurationTab {
     
     private TreeViewer launchConfViewer;
-    private CheckboxTreeViewer choosenConfViewer;
+    private CheckboxTreeViewer chosenConfViewer;
     private Button addButton;
     private Button addAllButton;
     private Button upButton;
@@ -46,7 +49,7 @@ public class CompositeLaunchMainTab extends AbstractLaunchConfigurationTab {
     
     private String mode;
     
-    private List<CLaunchConfigurationElement> choosenConfInput = new ArrayList<>();
+    private List<CLaunchConfigurationElement> chosenConfInput = new ArrayList<>();
 
     public CompositeLaunchMainTab(String mode) {
         this.mode = mode;
@@ -65,12 +68,12 @@ public class CompositeLaunchMainTab extends AbstractLaunchConfigurationTab {
         
         initTopButtons(mainComposite);
         
-        initChoosenConfViewer(mainComposite);
+        initChosenConfViewer(mainComposite);
         
         initBottomButtons(mainComposite);
         
         setButtonsEnabled();
-        setChoosenInput();
+        setChosenInput();
     }
 
     private void initLaunchConfViewer(Composite parent) {
@@ -100,8 +103,8 @@ public class CompositeLaunchMainTab extends AbstractLaunchConfigurationTab {
             @Override
             public void doubleClick(DoubleClickEvent event) {
                 TreeSelection selection = (TreeSelection) event.getSelection();
-                addToChoosenInput(selection.getFirstElement());
-                setChoosenInput();
+                addToChosenInput(selection.getFirstElement());
+                setChosenInput();
                 updateLaunchConfigurationDialog();
             }
         });
@@ -136,9 +139,9 @@ public class CompositeLaunchMainTab extends AbstractLaunchConfigurationTab {
                     TreeSelection selection = (TreeSelection) launchConfViewer.getSelection();
                     Iterator<?> iterator = selection.iterator();
                     while (iterator.hasNext()) {
-                        addToChoosenInput(iterator.next());
+                        addToChosenInput(iterator.next());
                     }
-                    setChoosenInput();
+                    setChosenInput();
                     updateLaunchConfigurationDialog();
                 }
             }
@@ -155,9 +158,9 @@ public class CompositeLaunchMainTab extends AbstractLaunchConfigurationTab {
                 if (launchConfViewer != null) {
                     TreeItem[] items = launchConfViewer.getTree().getItems();
                     for (TreeItem item : items) {
-                        addToChoosenInput(item.getData());
+                        addToChosenInput(item.getData());
                     }
-                    setChoosenInput();
+                    setChosenInput();
                     updateLaunchConfigurationDialog();
                 }
             }
@@ -167,42 +170,42 @@ public class CompositeLaunchMainTab extends AbstractLaunchConfigurationTab {
         });
     }
     
-    private void initChoosenConfViewer(Composite parent) {
+    private void initChosenConfViewer(Composite parent) {
         GridData fillBothGridData = new GridData(SWT.FILL, SWT.FILL, true, true);
         
-        choosenConfViewer = new CheckboxTreeViewer(parent, SWT.CHECK | SWT.BORDER | SWT.V_SCROLL | SWT.H_SCROLL | SWT.MULTI);
-        choosenConfViewer.setContentProvider(new ChoosenConfigurationContentProvider());
-        choosenConfViewer.setLabelProvider(new ChoosenConfigurationLabelProvider());
+        chosenConfViewer = new CheckboxTreeViewer(parent, SWT.CHECK | SWT.BORDER | SWT.V_SCROLL | SWT.H_SCROLL | SWT.MULTI);
+        chosenConfViewer.setContentProvider(new ChosenConfigurationContentProvider());
+        chosenConfViewer.setLabelProvider(new ChosenConfigurationLabelProvider());
         
-        Tree choosenConfViewerTree = choosenConfViewer.getTree();
-        choosenConfViewerTree.setLayoutData(fillBothGridData);
-        choosenConfViewerTree.setHeaderVisible(true);
-        choosenConfViewerTree.setFont(parent.getFont());
-        TreeColumn nameColumn = new TreeColumn(choosenConfViewerTree, SWT.LEFT);
+        Tree chosenConfViewerTree = chosenConfViewer.getTree();
+        chosenConfViewerTree.setLayoutData(fillBothGridData);
+        chosenConfViewerTree.setHeaderVisible(true);
+        chosenConfViewerTree.setFont(parent.getFont());
+        TreeColumn nameColumn = new TreeColumn(chosenConfViewerTree, SWT.LEFT);
         nameColumn.setText("Name");
         nameColumn.setWidth(200);
         
-        choosenConfViewer.addCheckStateListener(new ICheckStateListener() {
+        chosenConfViewer.addCheckStateListener(new ICheckStateListener() {
             @Override
             public void checkStateChanged(CheckStateChangedEvent event) {
                 if (event.getElement() instanceof CLaunchConfigurationElement) {
                     CLaunchConfigurationElement element = (CLaunchConfigurationElement) event.getElement(); 
                     System.out.println(element.getConfiguration().getName());
                     element.setEnabled(event.getChecked());
-                    setChoosenInput();
+                    setChosenInput();
                 }
             }
         });
-        choosenConfViewer.addDoubleClickListener(new IDoubleClickListener() {
+        chosenConfViewer.addDoubleClickListener(new IDoubleClickListener() {
             @Override
             public void doubleClick(DoubleClickEvent event) {
                 TreeSelection selection = (TreeSelection) event.getSelection();
-                removeFromChoosenInput(selection.getFirstElement());
-                setChoosenInput();
+                removeFromChosenInput(selection.getFirstElement());
+                setChosenInput();
                 updateLaunchConfigurationDialog();
             }
         });
-        choosenConfViewer.addSelectionChangedListener(new ISelectionChangedListener() {
+        chosenConfViewer.addSelectionChangedListener(new ISelectionChangedListener() {
             @Override
             public void selectionChanged(SelectionChangedEvent event) {
                 setButtonsEnabled();
@@ -225,18 +228,18 @@ public class CompositeLaunchMainTab extends AbstractLaunchConfigurationTab {
         upButton.addSelectionListener(new SelectionListener() {
             @Override
             public void widgetSelected(SelectionEvent e) {
-                List<CLaunchConfigurationElement> selection = getTreeSelection(choosenConfViewer);
+                List<CLaunchConfigurationElement> selection = getTreeSelection(chosenConfViewer);
                 for (CLaunchConfigurationElement selected : selection) {
-                    int index = choosenConfInput.indexOf(selected);
+                    int index = chosenConfInput.indexOf(selected);
                     if (index >= 1) {
-                        CLaunchConfigurationElement prev = choosenConfInput.get(index - 1);
+                        CLaunchConfigurationElement prev = chosenConfInput.get(index - 1);
                         if (! selection.contains(prev)) {
-                            choosenConfInput.set(index - 1, selected);
-                            choosenConfInput.set(index, prev);
+                            chosenConfInput.set(index - 1, selected);
+                            chosenConfInput.set(index, prev);
                         }
                     }
                 }
-                setChoosenInput();
+                setChosenInput();
                 updateLaunchConfigurationDialog();
             }
             
@@ -250,21 +253,21 @@ public class CompositeLaunchMainTab extends AbstractLaunchConfigurationTab {
         downButton.addSelectionListener(new SelectionListener() {
             @Override
             public void widgetSelected(SelectionEvent e) {
-                List<CLaunchConfigurationElement> selection = getTreeSelection(choosenConfViewer);
+                List<CLaunchConfigurationElement> selection = getTreeSelection(chosenConfViewer);
                 if (! selection.isEmpty()) {
                     for (int i = selection.size() - 1; i >= 0; i--) {
                         CLaunchConfigurationElement selected = selection.get(i);
-                        int index = choosenConfInput.indexOf(selected);
-                        if (index <= choosenConfInput.size() - 2) {
-                            CLaunchConfigurationElement next = choosenConfInput.get(index + 1);
+                        int index = chosenConfInput.indexOf(selected);
+                        if (index <= chosenConfInput.size() - 2) {
+                            CLaunchConfigurationElement next = chosenConfInput.get(index + 1);
                             if (! selection.contains(next)) {
-                                choosenConfInput.set(index + 1, selected);
-                                choosenConfInput.set(index, next);
+                                chosenConfInput.set(index + 1, selected);
+                                chosenConfInput.set(index, next);
                             }
                         }
                     }
                 }
-                setChoosenInput();
+                setChosenInput();
                 updateLaunchConfigurationDialog();
             }
             
@@ -278,13 +281,13 @@ public class CompositeLaunchMainTab extends AbstractLaunchConfigurationTab {
         removeButton.addSelectionListener(new SelectionListener() {
             @Override
             public void widgetSelected(SelectionEvent e) {
-                if (choosenConfViewer != null) {
-                    TreeSelection selection = (TreeSelection) choosenConfViewer.getSelection();
+                if (chosenConfViewer != null) {
+                    TreeSelection selection = (TreeSelection) chosenConfViewer.getSelection();
                     Iterator<?> iterator = selection.iterator();
                     while (iterator.hasNext()) {
-                        removeFromChoosenInput(iterator.next());
+                        removeFromChosenInput(iterator.next());
                     }
-                    setChoosenInput();
+                    setChosenInput();
                     updateLaunchConfigurationDialog();
                 }
             }
@@ -299,12 +302,12 @@ public class CompositeLaunchMainTab extends AbstractLaunchConfigurationTab {
         removeAllButton.addSelectionListener(new SelectionListener() {
             @Override
             public void widgetSelected(SelectionEvent e) {
-                if (choosenConfViewer != null) {
-                    TreeItem[] items = choosenConfViewer.getTree().getItems();
+                if (chosenConfViewer != null) {
+                    TreeItem[] items = chosenConfViewer.getTree().getItems();
                     for (TreeItem item : items) {
-                        removeFromChoosenInput(item.getData());
+                        removeFromChosenInput(item.getData());
                     }
-                    setChoosenInput();
+                    setChosenInput();
                     updateLaunchConfigurationDialog();
                 }
             }
@@ -329,7 +332,7 @@ public class CompositeLaunchMainTab extends AbstractLaunchConfigurationTab {
             launchConfViewer.setInput(launchConfViewerInput);
         }
         try {
-            choosenConfInput = CLaunchConfigurationHelper.readElements(configuration);
+            chosenConfInput = CLaunchConfigurationHelper.readElements(configuration);
         } catch (CoreException e) {
             throw new SWTException(String.format(
                     "Failed to read elements from configuration %s. Message: \"%s\"",
@@ -337,22 +340,52 @@ public class CompositeLaunchMainTab extends AbstractLaunchConfigurationTab {
                     e.getLocalizedMessage()
             ));
         }
-        setChoosenInput();
+        setChosenInput();
         setButtonsEnabled();
     }
 
     @Override
     public void performApply(ILaunchConfigurationWorkingCopy configuration) {
-//        CLaunchConfigurationHelper.removeElements(configuration);
-        CLaunchConfigurationHelper.writeElements(choosenConfInput, configuration);
+        try {
+            CLaunchConfigurationHelper.removeElements(configuration);
+        } catch (CoreException e) {
+            throw new SWTException(String.format(
+                    "Failed to clear launch configuration %s. Message: \"%s\"",
+                    String.valueOf(configuration),
+                    e.getLocalizedMessage()
+            ));
+        }
+        CLaunchConfigurationHelper.writeElements(chosenConfInput, configuration);
     }
     
     @Override
     public boolean isValid(ILaunchConfiguration launchConfig) {
+        setErrorMessage(null);
+        setMessage(null);
         boolean isValid = true;
         try {
             if (CLaunchConfigurationHelper.containsLoop(launchConfig)) {
                 setErrorMessage(String.format("Launch configuration %s cotains loop", String.valueOf(launchConfig)));
+                isValid = false;
+            }
+        } catch (CoreException e) {
+            setErrorMessage(e.getLocalizedMessage());
+            isValid = false;
+        }
+        try {
+            List<CLaunchConfigurationElement> elements = CLaunchConfigurationHelper.readElements(launchConfig);
+            if (! elements.isEmpty()) {
+                for (CLaunchConfigurationElement element : elements) {
+                    if (! element.getType().supportsMode(mode)) {
+                        setMessage(String.format(
+                                "Launch configuration %s doesn't support run mode %s", 
+                                String.valueOf(element.getConfiguration()),
+                                mode
+                        ));
+                    }
+                }
+            } else {
+                setErrorMessage(String.format("Composite configuration %s doesn't contain any launch configurations.", String.valueOf(launchConfig)));
                 isValid = false;
             }
         } catch (CoreException e) {
@@ -376,43 +409,43 @@ public class CompositeLaunchMainTab extends AbstractLaunchConfigurationTab {
                 addAllButton.setEnabled(launchConfViewer.getTree().getItems().length > 0);
             }
         }
-        if (choosenConfViewer != null) {
+        if (chosenConfViewer != null) {
             if (upButton != null) {
-                upButton.setEnabled(! ((TreeSelection) choosenConfViewer.getSelection()).isEmpty());
+                upButton.setEnabled(! ((TreeSelection) chosenConfViewer.getSelection()).isEmpty());
             }
             if (downButton != null) {
-                downButton.setEnabled(! ((TreeSelection) choosenConfViewer.getSelection()).isEmpty());
+                downButton.setEnabled(! ((TreeSelection) chosenConfViewer.getSelection()).isEmpty());
             }
             if (removeButton != null) {
-                removeButton.setEnabled(! ((TreeSelection) choosenConfViewer.getSelection()).isEmpty());
+                removeButton.setEnabled(! ((TreeSelection) chosenConfViewer.getSelection()).isEmpty());
             }
             if (removeAllButton != null) {
-                removeAllButton.setEnabled(choosenConfViewer.getTree().getItems().length > 0);
+                removeAllButton.setEnabled(chosenConfViewer.getTree().getItems().length > 0);
             }
         }
     }
     
-    private void addToChoosenInput(Object o) {
-        if (choosenConfInput != null && o != null && o instanceof CLaunchConfigurationElement) {
+    private void addToChosenInput(Object o) {
+        if (chosenConfInput != null && o != null && o instanceof CLaunchConfigurationElement) {
             CLaunchConfigurationElement element = (CLaunchConfigurationElement) o;
-            CLaunchConfigurationElement choosenElement = new CLaunchConfigurationElement(element);
-            choosenElement.setEnabled(true);
-            choosenConfInput.add(choosenElement);
+            CLaunchConfigurationElement chosenElement = new CLaunchConfigurationElement(element);
+            chosenElement.setEnabled(true);
+            chosenConfInput.add(chosenElement);
         }
     }
     
-    private void removeFromChoosenInput(Object o) {
-        if (choosenConfInput != null && o != null && o instanceof CLaunchConfigurationElement) {
+    private void removeFromChosenInput(Object o) {
+        if (chosenConfInput != null && o != null && o instanceof CLaunchConfigurationElement) {
             CLaunchConfigurationElement element = (CLaunchConfigurationElement) o;
-            choosenConfInput.remove(element);
+            chosenConfInput.remove(element);
         }
     }
     
-    private void setChoosenInput() {
-        if (choosenConfViewer != null && choosenConfInput != null) {
-            choosenConfViewer.setInput(choosenConfInput);
-            for (CLaunchConfigurationElement element : choosenConfInput) {
-                choosenConfViewer.setChecked(element, element.isEnabled());
+    private void setChosenInput() {
+        if (chosenConfViewer != null && chosenConfInput != null) {
+            chosenConfViewer.setInput(chosenConfInput);
+            for (CLaunchConfigurationElement element : chosenConfInput) {
+                chosenConfViewer.setChecked(element, element.isEnabled());
             }
         }
         setButtonsEnabled();

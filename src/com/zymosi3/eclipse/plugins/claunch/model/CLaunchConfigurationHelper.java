@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -15,11 +16,15 @@ import org.eclipse.debug.core.ILaunchConfigurationType;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.debug.core.ILaunchManager;
 
+/**
+ * Helper methods for Composite Launch.
+ */
 public class CLaunchConfigurationHelper {
     
-    private static final String LAUNCH_CONFIGURATION_COUNT = "launch_configuration_count";
-    private static final String LAUNCH_CONFIGURATION_NAME = "launch_configuration_name";
-    private static final String LAUNCH_CONFIGURATION_ENABLED = "launch_configuration_enabled";
+    private static final String CLAUNCH_ATTRIBUTE_PREFIX = "claunch_configuration_"; //$NON-NLS-1$
+    private static final String CLAUNCH_CONFIGURATION_COUNT = CLAUNCH_ATTRIBUTE_PREFIX + "count"; //$NON-NLS-1$
+    private static final String CLAUNCH_CONFIGURATION_NAME = CLAUNCH_ATTRIBUTE_PREFIX + "name"; //$NON-NLS-1$
+    private static final String CLAUNCH_CONFIGURATION_ENABLED = CLAUNCH_ATTRIBUTE_PREFIX + "enabled"; //$NON-NLS-1$
     
     /**
      * Writes elements to working copy.
@@ -27,11 +32,27 @@ public class CLaunchConfigurationHelper {
      * @param workingCopy Configuration working copy.
      */
     public static void writeElements(List<CLaunchConfigurationElement> elements, ILaunchConfigurationWorkingCopy workingCopy) {
-        workingCopy.setAttribute(LAUNCH_CONFIGURATION_COUNT, elements.size());
+        workingCopy.setAttribute(CLAUNCH_CONFIGURATION_COUNT, elements.size());
         for (int i = 0; i < elements.size(); i++) {
             CLaunchConfigurationElement element = elements.get(i);
-            workingCopy.setAttribute(LAUNCH_CONFIGURATION_NAME + i, element.getConfiguration().getName());
-            workingCopy.setAttribute(LAUNCH_CONFIGURATION_ENABLED + i, element.isEnabled());
+            workingCopy.setAttribute(CLAUNCH_CONFIGURATION_NAME + i, element.getConfiguration().getName());
+            workingCopy.setAttribute(CLAUNCH_CONFIGURATION_ENABLED + i, element.isEnabled());
+        }
+    }
+    
+    /**
+     * Removes all elements from working copy.
+     * @param workingCopy The working copy.
+     * @throws CoreException Unexpected error.
+     */
+    public static void removeElements(ILaunchConfigurationWorkingCopy workingCopy) throws CoreException {
+        Map<?,?> attributes = workingCopy.getAttributes();
+        Iterator<?> iterator = attributes.keySet().iterator();
+        while (iterator.hasNext()) {
+            String attributeName = (String) iterator.next();
+            if (attributeName.startsWith(CLAUNCH_ATTRIBUTE_PREFIX)) {
+                workingCopy.removeAttribute(attributeName);
+            }
         }
     }
     
@@ -44,11 +65,11 @@ public class CLaunchConfigurationHelper {
     public static List<CLaunchConfigurationElement> readElements(ILaunchConfiguration compositeConfiguration) throws CoreException {
         List<CLaunchConfigurationElement> elements = new ArrayList<>();
         int count;
-        count = compositeConfiguration.getAttribute(LAUNCH_CONFIGURATION_COUNT, 0);
+        count = compositeConfiguration.getAttribute(CLAUNCH_CONFIGURATION_COUNT, 0);
         if (count > 0) {
             Map<String, ILaunchConfiguration> configurationsMap = getConfigurationsMap(getAllConfigurations(compositeConfiguration));
             for (int i = 0; i < count; i++) {
-                String configurationName = compositeConfiguration.getAttribute(LAUNCH_CONFIGURATION_NAME + i, (String) null);
+                String configurationName = compositeConfiguration.getAttribute(CLAUNCH_CONFIGURATION_NAME + i, (String) null);
                 if (configurationName != null) {
                     ILaunchConfiguration configuration = configurationsMap.get(configurationName);
                     if (configuration != null) {
@@ -58,7 +79,7 @@ public class CLaunchConfigurationHelper {
                                 configuration,
                                 getLaunchConfigurationModes(type)
                         );
-                        element.setEnabled(compositeConfiguration.getAttribute(LAUNCH_CONFIGURATION_ENABLED, false));
+                        element.setEnabled(compositeConfiguration.getAttribute(CLAUNCH_CONFIGURATION_ENABLED, false));
                         elements.add(element);
                     }
                 }

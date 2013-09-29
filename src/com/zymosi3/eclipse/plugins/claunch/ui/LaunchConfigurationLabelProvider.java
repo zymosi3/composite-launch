@@ -7,6 +7,9 @@ import org.eclipse.swt.graphics.Image;
 
 import com.zymosi3.eclipse.plugins.claunch.model.CLaunchConfigurationElement;
 
+/**
+ * Abstract label provider for launch configurations.
+ */
 @SuppressWarnings("restriction")
 public abstract class LaunchConfigurationLabelProvider extends BaseLabelProvider implements ITableLabelProvider {
 

@@ -2,7 +2,10 @@ package com.zymosi3.eclipse.plugins.claunch.ui;
 
 import com.zymosi3.eclipse.plugins.claunch.model.CLaunchConfigurationElement;
 
-public class ChoosenConfigurationLabelProvider extends LaunchConfigurationLabelProvider {
+/**
+ * Label provider for chosen elements.
+ */
+public class ChosenConfigurationLabelProvider extends LaunchConfigurationLabelProvider {
     
     private static final int NAME_COLUMN_IDX = 0;
 

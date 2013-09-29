@@ -5,7 +5,10 @@ import java.util.List;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.Viewer;
 
-public class ChoosenConfigurationContentProvider implements ITreeContentProvider {
+/**
+ * Content provider of chosen elements.
+ */
+public class ChosenConfigurationContentProvider implements ITreeContentProvider {
 
     @Override
     public void dispose() { }
