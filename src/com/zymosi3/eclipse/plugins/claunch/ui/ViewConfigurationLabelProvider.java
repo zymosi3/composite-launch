@@ -1,11 +1,15 @@
 package com.zymosi3.eclipse.plugins.claunch.ui;
 
+import com.zymosi3.eclipse.plugins.claunch.model.CLaunchConfigurationElement;
+
 public class ViewConfigurationLabelProvider extends LaunchConfigurationLabelProvider {
+    
+    private static final int NAME_COLUMN_IDX = 0;
 
     @Override
     public String getColumnText(Object element, int columnIndex) {
-        if (element instanceof LaunchConfigurationElement) {
-            LaunchConfigurationElement configurationElement = (LaunchConfigurationElement) element;
+        if (element instanceof CLaunchConfigurationElement) {
+            CLaunchConfigurationElement configurationElement = (CLaunchConfigurationElement) element;
             if (columnIndex == 0) {
                 return configurationElement.getConfiguration().getName();
             }
@@ -25,6 +29,11 @@ public class ViewConfigurationLabelProvider extends LaunchConfigurationLabelProv
             }
         }
         return String.valueOf(element);
+    }
+
+    @Override
+    protected int nameColumnIndex() {
+        return NAME_COLUMN_IDX;
     }
 
 }

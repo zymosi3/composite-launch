@@ -5,17 +5,21 @@ import org.eclipse.jface.viewers.BaseLabelProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.swt.graphics.Image;
 
+import com.zymosi3.eclipse.plugins.claunch.model.CLaunchConfigurationElement;
+
 @SuppressWarnings("restriction")
 public abstract class LaunchConfigurationLabelProvider extends BaseLabelProvider implements ITableLabelProvider {
 
     @Override
     public Image getColumnImage(Object element, int columnIndex) {
-        if (element instanceof LaunchConfigurationElement) {
-            LaunchConfigurationElement configurationElement = (LaunchConfigurationElement) element;
-            if (columnIndex == 0) {
+        if (element instanceof CLaunchConfigurationElement) {
+            CLaunchConfigurationElement configurationElement = (CLaunchConfigurationElement) element;
+            if (columnIndex == nameColumnIndex()) {
                 return DebugPluginImages.getImage(configurationElement.getType().getIdentifier());
             }
         }
         return null;
     }
+    
+    protected abstract int nameColumnIndex();
 }
