@@ -27,7 +27,7 @@ public class CompositeLaunchDelegate implements ILaunchConfigurationDelegate {
             List<CLaunchConfigurationElement> elements = CLaunchConfigurationHelper.readElements(configuration);
             for (CLaunchConfigurationElement element : elements) {
                 ILaunchConfiguration subConfiguration = element.getConfiguration();
-                if (! monitor.isCanceled() && checkConfiguration(subConfiguration, mode)) {
+                if (! monitor.isCanceled() && element.isEnabled() && checkConfiguration(subConfiguration, mode)) {
                     DebugUIPlugin.buildAndLaunch(
                             element.getConfiguration(), 
                             mode, 

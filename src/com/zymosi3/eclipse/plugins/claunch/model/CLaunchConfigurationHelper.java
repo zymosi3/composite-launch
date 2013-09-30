@@ -25,6 +25,9 @@ public class CLaunchConfigurationHelper {
     private static final String CLAUNCH_CONFIGURATION_COUNT = CLAUNCH_ATTRIBUTE_PREFIX + "count"; //$NON-NLS-1$
     private static final String CLAUNCH_CONFIGURATION_NAME = CLAUNCH_ATTRIBUTE_PREFIX + "name"; //$NON-NLS-1$
     private static final String CLAUNCH_CONFIGURATION_ENABLED = CLAUNCH_ATTRIBUTE_PREFIX + "enabled"; //$NON-NLS-1$
+    private static final String CLAUNCH_CONFIGURATION_WAIT_PREVIOUS = CLAUNCH_ATTRIBUTE_PREFIX + "waitPrevious"; //$NON-NLS-1$
+    private static final String CLAUNCH_CONFIGURATION_DELAY_BEFORE = CLAUNCH_ATTRIBUTE_PREFIX + "delayBefore"; //$NON-NLS-1$
+    private static final String CLAUNCH_CONFIGURATION_DELAY_AFTER = CLAUNCH_ATTRIBUTE_PREFIX + "delayAfter"; //$NON-NLS-1$
     
     /**
      * Writes elements to working copy.
@@ -37,6 +40,9 @@ public class CLaunchConfigurationHelper {
             CLaunchConfigurationElement element = elements.get(i);
             workingCopy.setAttribute(CLAUNCH_CONFIGURATION_NAME + i, element.getConfiguration().getName());
             workingCopy.setAttribute(CLAUNCH_CONFIGURATION_ENABLED + i, element.isEnabled());
+            workingCopy.setAttribute(CLAUNCH_CONFIGURATION_WAIT_PREVIOUS + i, element.isWaitPrevious());
+            workingCopy.setAttribute(CLAUNCH_CONFIGURATION_DELAY_BEFORE + i, element.getDelayBefore());
+            workingCopy.setAttribute(CLAUNCH_CONFIGURATION_DELAY_AFTER + i, element.getDelayAfter());
         }
     }
     
@@ -79,7 +85,10 @@ public class CLaunchConfigurationHelper {
                                 configuration,
                                 getLaunchConfigurationModes(type)
                         );
-                        element.setEnabled(compositeConfiguration.getAttribute(CLAUNCH_CONFIGURATION_ENABLED, false));
+                        element.setEnabled(compositeConfiguration.getAttribute(CLAUNCH_CONFIGURATION_ENABLED + i, false));
+                        element.setWaitPrevious(compositeConfiguration.getAttribute(CLAUNCH_CONFIGURATION_WAIT_PREVIOUS + i, false));
+                        element.setDelayBefore(compositeConfiguration.getAttribute(CLAUNCH_CONFIGURATION_DELAY_BEFORE + i, 0));
+                        element.setDelayAfter(compositeConfiguration.getAttribute(CLAUNCH_CONFIGURATION_DELAY_AFTER + i, 0));
                         elements.add(element);
                     }
                 }
@@ -138,6 +147,12 @@ public class CLaunchConfigurationHelper {
         return contains(configuration, configuration);
     }
     
+    /**
+     * Checks that configuration really exists.
+     * @param configuration The configuration to check.
+     * @return True if configuration exists false otherwise.
+     * @throws CoreException Unexpected error.
+     */
     public static boolean configurationExists(ILaunchConfiguration configuration) throws CoreException {
         if (configuration == null) {
             return false;

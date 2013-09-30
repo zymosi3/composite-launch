@@ -9,6 +9,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.debug.ui.AbstractLaunchConfigurationTab;
+import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.viewers.CheckStateChangedEvent;
 import org.eclipse.jface.viewers.CheckboxTreeViewer;
 import org.eclipse.jface.viewers.DoubleClickEvent;
@@ -26,6 +27,7 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeColumn;
 import org.eclipse.swt.widgets.TreeItem;
@@ -44,6 +46,7 @@ public class CompositeLaunchMainTab extends AbstractLaunchConfigurationTab {
     private Button addAllButton;
     private Button upButton;
     private Button downButton;
+    private Button editButton;
     private Button removeButton;
     private Button removeAllButton;
     
@@ -124,7 +127,7 @@ public class CompositeLaunchMainTab extends AbstractLaunchConfigurationTab {
         topButtonsLayout.numColumns = 1;
         topButtonsComposite.setLayout(topButtonsLayout);
         
-        GridData buttonGridData = new GridData(GridData.END, GridData.BEGINNING, false, false);
+        GridData buttonGridData = new GridData(GridData.CENTER, GridData.BEGINNING, false, false);
         buttonGridData.heightHint = 26;
         buttonGridData.minimumHeight = 26;
         buttonGridData.widthHint = 74;
@@ -184,6 +187,15 @@ public class CompositeLaunchMainTab extends AbstractLaunchConfigurationTab {
         TreeColumn nameColumn = new TreeColumn(chosenConfViewerTree, SWT.LEFT);
         nameColumn.setText("Name");
         nameColumn.setWidth(200);
+        TreeColumn delayBeforeColumn = new TreeColumn(chosenConfViewerTree, SWT.LEFT);
+        delayBeforeColumn.setText("Delay Before (ms)");
+        delayBeforeColumn.setWidth(150);
+        TreeColumn delayAfterColumn = new TreeColumn(chosenConfViewerTree, SWT.LEFT);
+        delayAfterColumn.setText("Delay After (ms)");
+        delayAfterColumn.setWidth(150);
+        TreeColumn waitPreviousColumn = new TreeColumn(chosenConfViewerTree, SWT.LEFT);
+        waitPreviousColumn.setText("Wait Previous");
+        waitPreviousColumn.setWidth(150);
         
         chosenConfViewer.addCheckStateListener(new ICheckStateListener() {
             @Override
@@ -193,16 +205,14 @@ public class CompositeLaunchMainTab extends AbstractLaunchConfigurationTab {
                     System.out.println(element.getConfiguration().getName());
                     element.setEnabled(event.getChecked());
                     setChosenInput();
+                    updateLaunchConfigurationDialog();
                 }
             }
         });
         chosenConfViewer.addDoubleClickListener(new IDoubleClickListener() {
             @Override
             public void doubleClick(DoubleClickEvent event) {
-                TreeSelection selection = (TreeSelection) event.getSelection();
-                removeFromChosenInput(selection.getFirstElement());
-                setChosenInput();
-                updateLaunchConfigurationDialog();
+                openEditDialog();
             }
         });
         chosenConfViewer.addSelectionChangedListener(new ISelectionChangedListener() {
@@ -221,7 +231,11 @@ public class CompositeLaunchMainTab extends AbstractLaunchConfigurationTab {
         bottomButtonsLayout.numColumns = 1;
         bottomButtonsComposite.setLayout(bottomButtonsLayout);
         
-        GridData buttonGridData = new GridData(GridData.END, GridData.BEGINNING, false, false);
+        GridData buttonGridData = new GridData(GridData.CENTER, GridData.BEGINNING, false, false);
+        buttonGridData.heightHint = 26;
+        buttonGridData.minimumHeight = 26;
+        buttonGridData.widthHint = 74;
+        buttonGridData.minimumHeight = 74;
         upButton = new Button(bottomButtonsComposite, SWT.PUSH);
         upButton.setText("Up");
         upButton.setLayoutData(buttonGridData);
@@ -274,6 +288,22 @@ public class CompositeLaunchMainTab extends AbstractLaunchConfigurationTab {
             @Override
             public void widgetDefaultSelected(SelectionEvent e) {}
         });
+        
+        editButton = new Button(bottomButtonsComposite, SWT.PUSH);
+        editButton.setText("Edit...");
+        editButton.setLayoutData(buttonGridData);
+        editButton.addSelectionListener(new SelectionListener() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                openEditDialog();
+            }
+            
+            @Override
+            public void widgetDefaultSelected(SelectionEvent e) {}
+        });
+        
+        Label separator = new Label(bottomButtonsComposite, SWT.SEPARATOR | SWT.HORIZONTAL);
+        separator.setLayoutData(new GridData(GridData.CENTER, GridData.BEGINNING, false, false));
         
         removeButton = new Button(bottomButtonsComposite, SWT.PUSH);
         removeButton.setText("Remove");
@@ -399,6 +429,38 @@ public class CompositeLaunchMainTab extends AbstractLaunchConfigurationTab {
     public String getName() {
         return "Main";
     }
+    
+    private void openEditDialog() {
+        TreeSelection selection = (TreeSelection) chosenConfViewer.getSelection();
+        if (selection.size() == 1) {
+            CLaunchConfigurationElement element = (CLaunchConfigurationElement) selection.getFirstElement();
+            CLaunchConfigurationElement elementCopy = new CLaunchConfigurationElement(element);
+            EditChosenConfigurationDialog dialog = new EditChosenConfigurationDialog(getShell(), elementCopy);
+            if (dialog.open() == Dialog.OK) {
+                boolean changed = false;
+                if (element.isEnabled() != elementCopy.isEnabled()) {
+                    element.setEnabled(elementCopy.isEnabled());
+                    changed = true;
+                }
+                if (element.getDelayAfter() != elementCopy.getDelayAfter()) {
+                    element.setDelayAfter(elementCopy.getDelayAfter());
+                    changed = true;
+                }
+                if (element.getDelayBefore() != elementCopy.getDelayBefore()) {
+                    element.setDelayBefore(elementCopy.getDelayBefore());
+                    changed = true;
+                }
+                if (element.isWaitPrevious() != elementCopy.isWaitPrevious()) {
+                    element.setWaitPrevious(elementCopy.isWaitPrevious());
+                    changed = true;
+                }
+                if (changed) {
+                    setChosenInput();
+                    updateLaunchConfigurationDialog();
+                }
+            }
+        }
+    }
 
     private void setButtonsEnabled() {
         if (launchConfViewer != null) {
@@ -415,6 +477,9 @@ public class CompositeLaunchMainTab extends AbstractLaunchConfigurationTab {
             }
             if (downButton != null) {
                 downButton.setEnabled(! ((TreeSelection) chosenConfViewer.getSelection()).isEmpty());
+            }
+            if (editButton != null) {
+                editButton.setEnabled(((TreeSelection) chosenConfViewer.getSelection()).size() == 1);
             }
             if (removeButton != null) {
                 removeButton.setEnabled(! ((TreeSelection) chosenConfViewer.getSelection()).isEmpty());
