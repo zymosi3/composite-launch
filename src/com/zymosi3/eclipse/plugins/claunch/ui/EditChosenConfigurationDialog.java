@@ -21,11 +21,10 @@ import com.zymosi3.eclipse.plugins.claunch.model.CLaunchConfigurationElement;
 public class EditChosenConfigurationDialog extends TitleAreaDialog {
 
     private static final int WIDTH = 300;
-    private static final int HEIGHT = 280;
+    private static final int HEIGHT = 250;
 
     private CLaunchConfigurationElement element;
-    private Text delayBeforeText;
-    private Text delayAfterText;
+    private Text delayText;
 
     private Button enabledCheckbox;
     private Button waitPreviousCheckbox;
@@ -60,73 +59,43 @@ public class EditChosenConfigurationDialog extends TitleAreaDialog {
         mainComposite.setLayout(mainLayout);
         mainComposite.setFont(parent.getFont());
 
-        Composite delayBeforeComposite = new Composite(mainComposite, SWT.NONE);
-        delayBeforeComposite.setLayoutData(new GridData(GridData.BEGINNING, GridData.BEGINNING, true, false));
-        GridLayout delayBeforeLayout = new GridLayout();
-        delayBeforeLayout.numColumns = 2;
-        delayBeforeComposite.setLayout(delayBeforeLayout);
-        delayBeforeComposite.setFont(parent.getFont());
+        Composite delayComposite = new Composite(mainComposite, SWT.NONE);
+        delayComposite.setLayoutData(new GridData(GridData.BEGINNING, GridData.BEGINNING, true, false));
+        GridLayout delayLayout = new GridLayout();
+        delayLayout.numColumns = 2;
+        delayComposite.setLayout(delayLayout);
+        delayComposite.setFont(parent.getFont());
 
         GridData labelGridData = new GridData(GridData.BEGINNING, GridData.BEGINNING, false, false);
 
-        Label delayBeforeLabel = new Label(delayBeforeComposite, SWT.NONE);
-        delayBeforeLabel.setText("Delay before (ms)");
-        delayBeforeLabel.setLayoutData(labelGridData);
+        Label delayLabel = new Label(delayComposite, SWT.NONE);
+        delayLabel.setText("Delay (ms)");
+        delayLabel.setLayoutData(labelGridData);
 
         GridData textGridData = new GridData(GridData.BEGINNING, GridData.BEGINNING, false, false);
         textGridData.widthHint = 64;
 
-        delayBeforeText = new Text(delayBeforeComposite, SWT.SINGLE | SWT.BORDER);
-        delayBeforeText.setLayoutData(textGridData);
-        delayBeforeText.addModifyListener(new ModifyListener() {
+        delayText = new Text(delayComposite, SWT.SINGLE | SWT.BORDER);
+        delayText.setLayoutData(textGridData);
+        delayText.addModifyListener(new ModifyListener() {
             @Override
             public void modifyText(ModifyEvent e) {
                 String text = ((Text) e.widget).getText();
                 if (text == null || text.equals("")) {
                     text = "0";
                 }
-                int delayBefore = element.getDelayBefore();
+                int delay = element.getDelay();
                 try {
                     int newValue = Integer.parseInt(text);
                     if (newValue < 0 || newValue > Integer.MAX_VALUE) {
                         throw new NumberFormatException();
                     }
-                    if (newValue != delayBefore) {
-                        element.setDelayBefore(newValue);
+                    if (newValue != delay) {
+                        element.setDelay(newValue);
                         setControlValues();
                     }
                 } catch (NumberFormatException exc) {
-                    element.setDelayBefore(delayBefore);
-                    setControlValues();
-                }
-            }
-        });
-
-        Label delayAfterLabel = new Label(delayBeforeComposite, SWT.NONE);
-        delayAfterLabel.setText("Delay after (ms)");
-        delayAfterLabel.setLayoutData(labelGridData);
-
-        delayAfterText = new Text(delayBeforeComposite, SWT.SINGLE | SWT.BORDER);
-        delayAfterText.setLayoutData(textGridData);
-        delayAfterText.addModifyListener(new ModifyListener() {
-            @Override
-            public void modifyText(ModifyEvent e) {
-                String text = ((Text) e.widget).getText();
-                if (text == null || text.equals("")) {
-                    text = "0";
-                }
-                int delayAfter = element.getDelayAfter();
-                try {
-                    int newValue = Integer.parseInt(text);
-                    if (newValue < 0 || newValue > Integer.MAX_VALUE) {
-                        throw new NumberFormatException();
-                    }
-                    if (newValue != delayAfter) {
-                        element.setDelayAfter(newValue);
-                        setControlValues();
-                    }
-                } catch (NumberFormatException exc) {
-                    element.setDelayAfter(delayAfter);
+                    element.setDelay(delay);
                     setControlValues();
                 }
             }
@@ -134,21 +103,9 @@ public class EditChosenConfigurationDialog extends TitleAreaDialog {
 
         GridData buttonGridData = new GridData(GridData.BEGINNING, GridData.BEGINNING, true, false);
         buttonGridData.horizontalIndent = 4;
+        buttonGridData.verticalIndent = 4;
+        buttonGridData.widthHint = 150;
 
-        enabledCheckbox = new Button(mainComposite, SWT.CHECK);
-        enabledCheckbox.setText("Enabled");
-        enabledCheckbox.setLayoutData(buttonGridData);
-        enabledCheckbox.addSelectionListener(new SelectionListener() {
-            @Override
-            public void widgetSelected(SelectionEvent e) {
-                element.setEnabled(enabledCheckbox.getSelection());
-            }
-
-            @Override
-            public void widgetDefaultSelected(SelectionEvent e) {
-            }
-        });
-        
         waitPreviousCheckbox = new Button(mainComposite, SWT.CHECK);
         waitPreviousCheckbox.setText("Wait previous");
         waitPreviousCheckbox.setLayoutData(buttonGridData);
@@ -156,6 +113,20 @@ public class EditChosenConfigurationDialog extends TitleAreaDialog {
             @Override
             public void widgetSelected(SelectionEvent e) {
                 element.setWaitPrevious(waitPreviousCheckbox.getSelection());
+            }
+
+            @Override
+            public void widgetDefaultSelected(SelectionEvent e) {
+            }
+        });
+        
+        enabledCheckbox = new Button(mainComposite, SWT.CHECK);
+        enabledCheckbox.setText("Enabled");
+        enabledCheckbox.setLayoutData(buttonGridData);
+        enabledCheckbox.addSelectionListener(new SelectionListener() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                element.setEnabled(enabledCheckbox.getSelection());
             }
 
             @Override
@@ -186,15 +157,10 @@ public class EditChosenConfigurationDialog extends TitleAreaDialog {
         if (waitPreviousCheckbox != null) {
             waitPreviousCheckbox.setSelection(element.isWaitPrevious());
         }
-        if (delayBeforeText != null) {
-            int caretPosition = delayBeforeText.getCaretPosition();
-            delayBeforeText.setText(String.valueOf(element.getDelayBefore()));
-            delayBeforeText.setSelection(caretPosition, caretPosition);
-        }
-        if (delayAfterText != null) {
-            int caretPosition = delayAfterText.getCaretPosition();
-            delayAfterText.setText(String.valueOf(element.getDelayAfter()));
-            delayAfterText.setSelection(caretPosition, caretPosition);
+        if (delayText != null) {
+            int caretPosition = delayText.getCaretPosition();
+            delayText.setText(String.valueOf(element.getDelay()));
+            delayText.setSelection(caretPosition, caretPosition);
         }
     }
 }

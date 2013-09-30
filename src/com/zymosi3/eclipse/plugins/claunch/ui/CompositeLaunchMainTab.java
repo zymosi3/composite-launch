@@ -188,11 +188,8 @@ public class CompositeLaunchMainTab extends AbstractLaunchConfigurationTab {
         nameColumn.setText("Name");
         nameColumn.setWidth(200);
         TreeColumn delayBeforeColumn = new TreeColumn(chosenConfViewerTree, SWT.LEFT);
-        delayBeforeColumn.setText("Delay Before (ms)");
+        delayBeforeColumn.setText("Delay (ms)");
         delayBeforeColumn.setWidth(150);
-        TreeColumn delayAfterColumn = new TreeColumn(chosenConfViewerTree, SWT.LEFT);
-        delayAfterColumn.setText("Delay After (ms)");
-        delayAfterColumn.setWidth(150);
         TreeColumn waitPreviousColumn = new TreeColumn(chosenConfViewerTree, SWT.LEFT);
         waitPreviousColumn.setText("Wait Previous");
         waitPreviousColumn.setWidth(150);
@@ -442,12 +439,8 @@ public class CompositeLaunchMainTab extends AbstractLaunchConfigurationTab {
                     element.setEnabled(elementCopy.isEnabled());
                     changed = true;
                 }
-                if (element.getDelayAfter() != elementCopy.getDelayAfter()) {
-                    element.setDelayAfter(elementCopy.getDelayAfter());
-                    changed = true;
-                }
-                if (element.getDelayBefore() != elementCopy.getDelayBefore()) {
-                    element.setDelayBefore(elementCopy.getDelayBefore());
+                if (element.getDelay() != elementCopy.getDelay()) {
+                    element.setDelay(elementCopy.getDelay());
                     changed = true;
                 }
                 if (element.isWaitPrevious() != elementCopy.isWaitPrevious()) {

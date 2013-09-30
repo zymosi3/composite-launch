@@ -8,9 +8,8 @@ import com.zymosi3.eclipse.plugins.claunch.model.CLaunchConfigurationElement;
 public class ChosenConfigurationLabelProvider extends LaunchConfigurationLabelProvider {
     
     private static final int NAME_COLUMN_IDX = 0;
-    private static final int DELAY_BEFORE_COLUMN_IDX = 1;
-    private static final int DELAY_AFTER_COLUMN_IDX = 2;
-    private static final int WAIT_PREVIOUS_COLUMN_IDX = 3;
+    private static final int DELAY_COLUMN_IDX = 1;
+    private static final int WAIT_PREVIOUS_COLUMN_IDX = 2;
 
     @Override
     public String getColumnText(Object element, int columnIndex) {
@@ -19,11 +18,8 @@ public class ChosenConfigurationLabelProvider extends LaunchConfigurationLabelPr
             if (columnIndex == NAME_COLUMN_IDX) {
                 return configurationElement.getConfiguration().getName();
             }
-            if (columnIndex == DELAY_BEFORE_COLUMN_IDX) {
-                return String.valueOf(configurationElement.getDelayBefore());
-            }
-            if (columnIndex == DELAY_AFTER_COLUMN_IDX) {
-                return String.valueOf(configurationElement.getDelayAfter());
+            if (columnIndex == DELAY_COLUMN_IDX) {
+                return String.valueOf(configurationElement.getDelay());
             }
             if (columnIndex == WAIT_PREVIOUS_COLUMN_IDX) {
                 return configurationElement.isWaitPrevious() ? "Yes" : "No";

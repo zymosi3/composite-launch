@@ -19,20 +19,24 @@ import com.zymosi3.eclipse.plugins.claunch.model.CLaunchConfigurationHelper;
 public class CompositeLaunchDelegate implements ILaunchConfigurationDelegate {
     
     private static final int MONITOR_TICKS = 100;
+    private static final int WAIT_GRANULARITY = 100;
 
     @Override
     public void launch(ILaunchConfiguration configuration, String mode, ILaunch launch, IProgressMonitor monitor) throws CoreException {
         monitor.beginTask(String.format("Composite launch %s", configuration.getName()), MONITOR_TICKS);
         try {
             List<CLaunchConfigurationElement> elements = CLaunchConfigurationHelper.readElements(configuration);
+            ILaunch previousSubLaunch = null; 
             for (CLaunchConfigurationElement element : elements) {
                 ILaunchConfiguration subConfiguration = element.getConfiguration();
                 if (! monitor.isCanceled() && element.isEnabled() && checkConfiguration(subConfiguration, mode)) {
-                    DebugUIPlugin.buildAndLaunch(
+                    delay(element, previousSubLaunch, monitor);
+                    ILaunch subLaunch = DebugUIPlugin.buildAndLaunch(
                             element.getConfiguration(), 
                             mode, 
                             new SubProgressMonitor(monitor, MONITOR_TICKS / elements.size())
                     );
+                    previousSubLaunch = subLaunch;
                 }
             }
         } finally {
@@ -40,6 +44,26 @@ public class CompositeLaunchDelegate implements ILaunchConfigurationDelegate {
         }
     }
     
+    private void delay(CLaunchConfigurationElement element, ILaunch previousSubLaunch, IProgressMonitor monitor) {
+        if (element.isWaitPrevious() && previousSubLaunch != null) {
+            while (! (monitor.isCanceled() || previousSubLaunch.isTerminated())) {
+                try {
+                    Thread.sleep(WAIT_GRANULARITY);
+                } catch (InterruptedException e) {
+                    break;
+                }
+            }
+        }
+        if (monitor.isCanceled()) {
+            return;
+        }
+        if (element.getDelay() > 0) {
+            try {
+                Thread.sleep(element.getDelay());
+            } catch (InterruptedException ignored) {}
+        }
+    }
+
     private static boolean checkConfiguration(ILaunchConfiguration configuration, String mode) throws CoreException {
         boolean isValid = true;
         if (! configuration.supportsMode(mode)) {
