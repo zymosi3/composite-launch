@@ -22,7 +22,7 @@ public class ChosenConfigurationLabelProvider extends LaunchConfigurationLabelPr
                 return String.valueOf(configurationElement.getDelay());
             }
             if (columnIndex == WAIT_PREVIOUS_COLUMN_IDX) {
-                return configurationElement.isWaitPrevious() ? "Yes" : "No";
+                return configurationElement.isWaitPrevious() ? Messages.ChosenConfigurationLabelProvider_0 : Messages.ChosenConfigurationLabelProvider_1;
             }
         }
         return String.valueOf(element);

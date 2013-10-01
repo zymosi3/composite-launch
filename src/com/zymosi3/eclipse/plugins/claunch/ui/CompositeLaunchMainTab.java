@@ -93,13 +93,13 @@ public class CompositeLaunchMainTab extends AbstractLaunchConfigurationTab {
         launchConfViewerTree.setHeaderVisible(true);
         launchConfViewerTree.setFont(parent.getFont());
         TreeColumn nameColumn = new TreeColumn(launchConfViewerTree, SWT.LEFT);
-        nameColumn.setText("Name");
+        nameColumn.setText(Messages.CompositeLaunchMainTab_0);
         nameColumn.setWidth(200);
         TreeColumn typeColumn = new TreeColumn(launchConfViewerTree, SWT.LEFT);
-        typeColumn.setText("Type");
+        typeColumn.setText(Messages.CompositeLaunchMainTab_1);
         typeColumn.setWidth(150);
         TreeColumn modesColumn = new TreeColumn(launchConfViewerTree, SWT.LEFT);
-        modesColumn.setText("Modes");
+        modesColumn.setText(Messages.CompositeLaunchMainTab_2);
         modesColumn.setWidth(150);
         
         launchConfViewer.addDoubleClickListener(new IDoubleClickListener() {
@@ -133,7 +133,7 @@ public class CompositeLaunchMainTab extends AbstractLaunchConfigurationTab {
         buttonGridData.widthHint = 74;
         buttonGridData.minimumHeight = 74;
         addButton = new Button(topButtonsComposite, SWT.PUSH);
-        addButton.setText("Add");
+        addButton.setText(Messages.CompositeLaunchMainTab_3);
         addButton.setLayoutData(buttonGridData);
         addButton.addSelectionListener(new SelectionListener() {
             @Override
@@ -153,7 +153,7 @@ public class CompositeLaunchMainTab extends AbstractLaunchConfigurationTab {
             public void widgetDefaultSelected(SelectionEvent e) {}
         });
         addAllButton = new Button(topButtonsComposite, SWT.PUSH);
-        addAllButton.setText("AddAll");
+        addAllButton.setText(Messages.CompositeLaunchMainTab_4);
         addAllButton.setLayoutData(buttonGridData);
         addAllButton.addSelectionListener(new SelectionListener() {
             @Override
@@ -185,13 +185,13 @@ public class CompositeLaunchMainTab extends AbstractLaunchConfigurationTab {
         chosenConfViewerTree.setHeaderVisible(true);
         chosenConfViewerTree.setFont(parent.getFont());
         TreeColumn nameColumn = new TreeColumn(chosenConfViewerTree, SWT.LEFT);
-        nameColumn.setText("Name");
+        nameColumn.setText(Messages.CompositeLaunchMainTab_5);
         nameColumn.setWidth(200);
         TreeColumn delayBeforeColumn = new TreeColumn(chosenConfViewerTree, SWT.LEFT);
-        delayBeforeColumn.setText("Delay (ms)");
+        delayBeforeColumn.setText(Messages.CompositeLaunchMainTab_6);
         delayBeforeColumn.setWidth(150);
         TreeColumn waitPreviousColumn = new TreeColumn(chosenConfViewerTree, SWT.LEFT);
-        waitPreviousColumn.setText("Wait Previous");
+        waitPreviousColumn.setText(Messages.CompositeLaunchMainTab_7);
         waitPreviousColumn.setWidth(150);
         
         chosenConfViewer.addCheckStateListener(new ICheckStateListener() {
@@ -234,7 +234,7 @@ public class CompositeLaunchMainTab extends AbstractLaunchConfigurationTab {
         buttonGridData.widthHint = 74;
         buttonGridData.minimumHeight = 74;
         upButton = new Button(bottomButtonsComposite, SWT.PUSH);
-        upButton.setText("Up");
+        upButton.setText(Messages.CompositeLaunchMainTab_8);
         upButton.setLayoutData(buttonGridData);
         upButton.addSelectionListener(new SelectionListener() {
             @Override
@@ -259,7 +259,7 @@ public class CompositeLaunchMainTab extends AbstractLaunchConfigurationTab {
         });
         
         downButton = new Button(bottomButtonsComposite, SWT.PUSH);
-        downButton.setText("Down");
+        downButton.setText(Messages.CompositeLaunchMainTab_9);
         downButton.setLayoutData(buttonGridData);
         downButton.addSelectionListener(new SelectionListener() {
             @Override
@@ -287,7 +287,7 @@ public class CompositeLaunchMainTab extends AbstractLaunchConfigurationTab {
         });
         
         editButton = new Button(bottomButtonsComposite, SWT.PUSH);
-        editButton.setText("Edit...");
+        editButton.setText(Messages.CompositeLaunchMainTab_10);
         editButton.setLayoutData(buttonGridData);
         editButton.addSelectionListener(new SelectionListener() {
             @Override
@@ -303,7 +303,7 @@ public class CompositeLaunchMainTab extends AbstractLaunchConfigurationTab {
         separator.setLayoutData(new GridData(GridData.CENTER, GridData.BEGINNING, false, false));
         
         removeButton = new Button(bottomButtonsComposite, SWT.PUSH);
-        removeButton.setText("Remove");
+        removeButton.setText(Messages.CompositeLaunchMainTab_11);
         removeButton.setLayoutData(buttonGridData);
         removeButton.addSelectionListener(new SelectionListener() {
             @Override
@@ -324,7 +324,7 @@ public class CompositeLaunchMainTab extends AbstractLaunchConfigurationTab {
         });
         
         removeAllButton = new Button(bottomButtonsComposite, SWT.PUSH);
-        removeAllButton.setText("RemoveAll");
+        removeAllButton.setText(Messages.CompositeLaunchMainTab_12);
         removeAllButton.setLayoutData(buttonGridData);
         removeAllButton.addSelectionListener(new SelectionListener() {
             @Override
@@ -353,7 +353,7 @@ public class CompositeLaunchMainTab extends AbstractLaunchConfigurationTab {
         try {
             launchConfViewerInput = CLaunchConfigurationHelper.getAllConfigurations(configuration);
         } catch (CoreException e) {
-            throw new SWTException(String.format("Failed to get launch configurations. Message: \"%s\"", e.getLocalizedMessage()));
+            throw new SWTException(String.format(Messages.CompositeLaunchMainTab_13, e.getLocalizedMessage()));
         }
         if (launchConfViewer != null) {
             launchConfViewer.setInput(launchConfViewerInput);
@@ -362,7 +362,7 @@ public class CompositeLaunchMainTab extends AbstractLaunchConfigurationTab {
             chosenConfInput = CLaunchConfigurationHelper.readElements(configuration);
         } catch (CoreException e) {
             throw new SWTException(String.format(
-                    "Failed to read elements from configuration %s. Message: \"%s\"",
+                    Messages.CompositeLaunchMainTab_14,
                     String.valueOf(configuration),
                     e.getLocalizedMessage()
             ));
@@ -377,7 +377,7 @@ public class CompositeLaunchMainTab extends AbstractLaunchConfigurationTab {
             CLaunchConfigurationHelper.removeElements(configuration);
         } catch (CoreException e) {
             throw new SWTException(String.format(
-                    "Failed to clear launch configuration %s. Message: \"%s\"",
+                    Messages.CompositeLaunchMainTab_15,
                     String.valueOf(configuration),
                     e.getLocalizedMessage()
             ));
@@ -392,7 +392,7 @@ public class CompositeLaunchMainTab extends AbstractLaunchConfigurationTab {
         boolean isValid = true;
         try {
             if (CLaunchConfigurationHelper.containsLoop(launchConfig)) {
-                setErrorMessage(String.format("Launch configuration %s cotains loop", String.valueOf(launchConfig)));
+                setErrorMessage(String.format(Messages.CompositeLaunchMainTab_16, String.valueOf(launchConfig)));
                 isValid = false;
             }
         } catch (CoreException e) {
@@ -405,14 +405,14 @@ public class CompositeLaunchMainTab extends AbstractLaunchConfigurationTab {
                 for (CLaunchConfigurationElement element : elements) {
                     if (! element.getType().supportsMode(mode)) {
                         setMessage(String.format(
-                                "Launch configuration %s doesn't support run mode %s", 
+                                Messages.CompositeLaunchMainTab_17, 
                                 String.valueOf(element.getConfiguration()),
                                 mode
                         ));
                     }
                 }
             } else {
-                setErrorMessage(String.format("Composite configuration %s doesn't contain any launch configurations.", String.valueOf(launchConfig)));
+                setErrorMessage(String.format(Messages.CompositeLaunchMainTab_18, String.valueOf(launchConfig)));
                 isValid = false;
             }
         } catch (CoreException e) {
@@ -424,7 +424,7 @@ public class CompositeLaunchMainTab extends AbstractLaunchConfigurationTab {
 
     @Override
     public String getName() {
-        return "Main";
+        return Messages.CompositeLaunchMainTab_19;
     }
     
     private void openEditDialog() {
@@ -432,7 +432,7 @@ public class CompositeLaunchMainTab extends AbstractLaunchConfigurationTab {
         if (selection.size() == 1) {
             CLaunchConfigurationElement element = (CLaunchConfigurationElement) selection.getFirstElement();
             CLaunchConfigurationElement elementCopy = new CLaunchConfigurationElement(element);
-            EditChosenConfigurationDialog dialog = new EditChosenConfigurationDialog(getShell(), elementCopy);
+            EditCLaunchElementDialog dialog = new EditCLaunchElementDialog(getShell(), elementCopy);
             if (dialog.open() == Dialog.OK) {
                 boolean changed = false;
                 if (element.isEnabled() != elementCopy.isEnabled()) {

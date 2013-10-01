@@ -18,7 +18,10 @@ import org.eclipse.swt.widgets.Text;
 
 import com.zymosi3.eclipse.plugins.claunch.model.CLaunchConfigurationElement;
 
-public class EditChosenConfigurationDialog extends TitleAreaDialog {
+/**
+ * Dialog for editing Composite Launch element
+ */
+public class EditCLaunchElementDialog extends TitleAreaDialog {
 
     private static final int WIDTH = 300;
     private static final int HEIGHT = 250;
@@ -29,19 +32,19 @@ public class EditChosenConfigurationDialog extends TitleAreaDialog {
     private Button enabledCheckbox;
     private Button waitPreviousCheckbox;
 
-    public EditChosenConfigurationDialog(Shell parentShell, CLaunchConfigurationElement element) {
+    public EditCLaunchElementDialog(Shell parentShell, CLaunchConfigurationElement element) {
         this(parentShell);
         this.element = element;
     }
 
-    protected EditChosenConfigurationDialog(Shell parentShell) {
+    protected EditCLaunchElementDialog(Shell parentShell) {
         super(parentShell);
     }
 
     @Override
     public void create() {
         super.create();
-        setTitle("Edit Composite Launch Element");
+        setTitle(Messages.EditCLaunchElementDialog_0);
     }
 
     @Override
@@ -69,7 +72,7 @@ public class EditChosenConfigurationDialog extends TitleAreaDialog {
         GridData labelGridData = new GridData(GridData.BEGINNING, GridData.BEGINNING, false, false);
 
         Label delayLabel = new Label(delayComposite, SWT.NONE);
-        delayLabel.setText("Delay (ms)");
+        delayLabel.setText(Messages.EditCLaunchElementDialog_1);
         delayLabel.setLayoutData(labelGridData);
 
         GridData textGridData = new GridData(GridData.BEGINNING, GridData.BEGINNING, false, false);
@@ -81,8 +84,8 @@ public class EditChosenConfigurationDialog extends TitleAreaDialog {
             @Override
             public void modifyText(ModifyEvent e) {
                 String text = ((Text) e.widget).getText();
-                if (text == null || text.equals("")) {
-                    text = "0";
+                if (text == null || text.equals("")) { //$NON-NLS-1$
+                    text = "0"; //$NON-NLS-1$
                 }
                 int delay = element.getDelay();
                 try {
@@ -107,7 +110,7 @@ public class EditChosenConfigurationDialog extends TitleAreaDialog {
         buttonGridData.widthHint = 150;
 
         waitPreviousCheckbox = new Button(mainComposite, SWT.CHECK);
-        waitPreviousCheckbox.setText("Wait previous");
+        waitPreviousCheckbox.setText(Messages.EditCLaunchElementDialog_4);
         waitPreviousCheckbox.setLayoutData(buttonGridData);
         waitPreviousCheckbox.addSelectionListener(new SelectionListener() {
             @Override
@@ -121,7 +124,7 @@ public class EditChosenConfigurationDialog extends TitleAreaDialog {
         });
         
         enabledCheckbox = new Button(mainComposite, SWT.CHECK);
-        enabledCheckbox.setText("Enabled");
+        enabledCheckbox.setText(Messages.EditCLaunchElementDialog_5);
         enabledCheckbox.setLayoutData(buttonGridData);
         enabledCheckbox.addSelectionListener(new SelectionListener() {
             @Override
@@ -142,7 +145,7 @@ public class EditChosenConfigurationDialog extends TitleAreaDialog {
     @Override
     protected void configureShell(Shell newShell) {
         super.configureShell(newShell);
-        newShell.setText("Composite Launch");
+        newShell.setText(Messages.EditCLaunchElementDialog_6);
     }
 
     @Override

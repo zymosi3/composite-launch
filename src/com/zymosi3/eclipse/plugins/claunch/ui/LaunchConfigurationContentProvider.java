@@ -41,7 +41,7 @@ public class LaunchConfigurationContentProvider implements ITreeContentProvider 
                         type = configuration.getType();
                     } catch (CoreException e) {
                         throw new SWTException(String.format(
-                                "Failed to get launch configuration type with name %s. Message: \"%s\"",
+                                Messages.LaunchConfigurationContentProvider_0,
                                 configuration.getName(),
                                 e.getLocalizedMessage()
                         ));

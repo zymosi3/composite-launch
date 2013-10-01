@@ -122,7 +122,7 @@ public class CLaunchConfigurationHelper {
      * @param type The configuration type.
      * @return Launch configuration modes
      */
-    @SuppressWarnings({ "unchecked" })
+    @SuppressWarnings({ "unchecked" }) // getSupportedModeCombinations() returns Set
     public static List<String> getLaunchConfigurationModes(ILaunchConfigurationType type) {
         Set<Set<?>> modesCombinations = type.getSupportedModeCombinations();
         Set<String> modes = new HashSet<>();

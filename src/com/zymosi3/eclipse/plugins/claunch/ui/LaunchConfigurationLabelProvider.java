@@ -10,7 +10,7 @@ import com.zymosi3.eclipse.plugins.claunch.model.CLaunchConfigurationElement;
 /**
  * Abstract label provider for launch configurations.
  */
-@SuppressWarnings("restriction")
+@SuppressWarnings("restriction") // DebugPluginImages is used to get icons
 public abstract class LaunchConfigurationLabelProvider extends BaseLabelProvider implements ITableLabelProvider {
 
     @Override
